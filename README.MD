@@ -11,7 +11,7 @@ This project is a Python application that retrieves information about EC2 instan
 ## Prerequisites
 
 - Python 3.7 or higher
-- AWS account with access to EC2
+- AWS account with access to EC2, S3 and IAM services
 - AWS credentials (Access Key ID and Secret Access Key)
 
 ## Installation

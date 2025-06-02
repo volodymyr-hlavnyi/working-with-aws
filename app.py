@@ -37,6 +37,26 @@ def get_ec2_instances():
     return response
 
 
+def get_s3_buckets():
+    session = get_session()
+    s3 = session.client('s3')
+    response = s3.list_buckets()
+    return response
+
+
+def get_users():
+    session = get_session()
+    iam = session.client('iam')
+    response = iam.list_users()
+    return response
+
+
 if __name__ == "__main__":
     instances = get_ec2_instances()
     print(f"EC2 Instances: {instances}")
+
+    buckets = get_s3_buckets()
+    print(f"S3 Buckets: {buckets['Buckets'] if 'Buckets' in buckets else 'No buckets found'}")
+
+    users = get_users()
+    print(f"IAM Users: {users['Users'] if 'Users' in users else 'No users found'}")
