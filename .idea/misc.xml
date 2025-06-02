@@ -3,4 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.13 (working-with-aws)" />
   </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13 virtualenv at ~/develop/python/aws/working-with-aws/.venv" project-jdk-type="Python SDK" />
 </project>
