@@ -37,32 +37,38 @@ def get_session():
 
 def get_ec2_instances():
     session = get_session()
-    if not session:
-        ec2 = session.client('ec2')
-        response = ec2.describe_instances()
-        return response
-    print("Failed to create AWS session.")
-    return None
+
+    if session is None:
+        print("Failed to create AWS session EC2.")
+        return None
+
+    ec2 = session.client('ec2')
+    response = ec2.describe_instances()
+    return response
+
 
 
 def get_s3_buckets():
     session = get_session()
-    if not session:
-        s3 = session.client('s3')
-        response = s3.list_buckets()
-        return response
-    print("Failed to create AWS session.")
-    return None
+    if session is None:
+        print("Failed to create AWS session S3.")
+        return None
+
+    s3 = session.client('s3')
+    response = s3.list_buckets()
+    return response
+
 
 
 def get_users():
     session = get_session()
-    if not session:
-        iam = session.client('iam')
-        response = iam.list_users()
-        return response
-    print("Failed to create AWS session.")
-    return None
+    if session is None:
+        print("Failed to create AWS session IAM.")
+        return None
+
+    iam = session.client('iam')
+    response = iam.list_users()
+    return response
 
 
 if __name__ == "__main__":
