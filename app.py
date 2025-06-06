@@ -1,13 +1,25 @@
+import datetime
+import json
+
 import boto3
 import os
 from os import environ as env
 from dotenv import load_dotenv, find_dotenv
+from datetime import datetime
 
 ENV_FILE = find_dotenv()
 if ENV_FILE:
     load_dotenv(ENV_FILE)
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
+
+
+# Custom JSON encoder to handle datetime objects
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()  # Convert datetime to ISO 8601 string
+        return super().default(obj)
 
 
 def get_credentials():
@@ -47,7 +59,6 @@ def get_ec2_instances():
     return response
 
 
-
 def get_s3_buckets():
     session = get_session()
     if session is None:
@@ -58,6 +69,16 @@ def get_s3_buckets():
     response = s3.list_buckets()
     return response
 
+
+def get_cloudwatch_metrics():
+    session = get_session()
+    if session is None:
+        print("Failed to create AWS session CloudWatch.")
+        return None
+
+    cloudwatch = session.client('cloudwatch')
+    response = cloudwatch.list_metrics()
+    return response
 
 
 def get_users():
@@ -71,22 +92,42 @@ def get_users():
     return response
 
 
+def print_response(response):
+    if response is None:
+        print("No data found or error retrieving data.")
+        return
+
+    if isinstance(response, dict):
+        print(json.dumps(response, indent=4, cls=CustomJSONEncoder))
+    elif isinstance(response, list):
+        print(json.dumps(response, indent=4, cls=CustomJSONEncoder))
+    else:
+        print("Unsupported response type.")
+
+
 if __name__ == "__main__":
-    instances = get_ec2_instances()
-    if instances:
-        print(f"EC2 Instances: {instances}")
-    else:
-        print("No EC2 instances found or error retrieving instances.")
+    print("Welcome to the AWS CLI Tool")
 
-
-    buckets = get_s3_buckets()
-    if buckets:
-        print(f"S3 Buckets: {buckets['Buckets'] if 'Buckets' in buckets else 'No buckets found'}")
-    else:
-        print("No S3 buckets found or error retrieving buckets.")
-
-    users = get_users()
-    if users:
-        print(f"IAM Users: {users['Users'] if 'Users' in users else 'No users found'}")
-    else:
-        print("No IAM users found or error retrieving users.")
+    while True:
+        print("\nSelect an option:")
+        print("1. EC2 Instances")
+        print("2. S3 Buckets")
+        print("3. IAM Users")
+        print("4. CloudWatch Metrics")
+        print("9. Exit")
+        answer = input("Select aws service: ").strip().lower()
+        if answer == '9':
+            print("Exiting the AWS CLI Tool.")
+            break
+        elif answer == '1':
+            instances = get_ec2_instances()
+            print_response(instances)
+        elif answer == '2':
+            buckets = get_s3_buckets()
+            print_response(buckets)
+        elif answer == '3':
+            users = get_users()
+            print_response(users)
+        elif answer == '4':
+            metrics = get_cloudwatch_metrics()
+            print_response(metrics)
